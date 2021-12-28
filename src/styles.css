@@ -1,4 +1,44 @@
 .App {
   font-family: sans-serif;
   text-align: center;
+  margin-top: 20px;
+
+  display: flex;
+  justify-content: center;
+  text-align: center;
+}
+
+
+.inputMessage {
+  width: 464px;
+  height: 644px;
+  background: #F2F2F2;
+}
+
+.nickName {
+ color: #e8971d;   
+}
+
+.textarea {
+  text-align: left;
+  height: 464px;
+}
+
+.textarea:focus-visible {
+    outline: none;
+}
+
+.messagePreview {
+  margin-left: 40px;
+  width: 375px;
+  height: 644px;
+  background: #F2F2F2;
+  white-space:pre-wrap;
+  text-align: left;
+  word-break: break-all;
+}
+
+[contentEditable=true]:empty:not(:focus):before {
+  color: red;
+  content: attr(placeholder)
 }
