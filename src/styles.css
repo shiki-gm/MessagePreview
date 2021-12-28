@@ -13,19 +13,47 @@
   width: 464px;
   height: 644px;
   background: #F2F2F2;
-}
-
-.nickName {
- color: #e8971d;   
+  padding: 22px;
 }
 
 .textarea {
   text-align: left;
-  height: 464px;
+  height: 456px;
+  overflow-y: auto;
 }
 
 .textarea:focus-visible {
     outline: none;
+}
+
+.input-footer {
+  display: flex;
+  justify-content: space-between;
+  padding: 16px 0;
+}
+
+.nickname {
+  cursor: pointer;
+}
+
+.last-num {
+  font-family: PingFang SC;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 22px;
+  color: #999999;
+
+}
+
+.line {
+height: 1px;
+width: 100%;
+/* left: 12px;
+right: 12px;
+top: 510px; */
+
+background: #D9D9D9;
 }
 
 .messagePreview {
