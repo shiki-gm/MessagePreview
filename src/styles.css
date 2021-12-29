@@ -1,3 +1,11 @@
+* {
+  font-family: PingFang SC;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 22px;
+}
+
 .App {
   font-family: sans-serif;
   text-align: center;
@@ -11,7 +19,7 @@
 
 .inputMessage {
   width: 464px;
-  height: 644px;
+  /* height: 644px; */
   background: #F2F2F2;
   padding: 22px;
 }
@@ -67,6 +75,5 @@ background: #D9D9D9;
 }
 
 [contentEditable=true]:empty:not(:focus):before {
-  color: red;
   content: attr(placeholder)
 }

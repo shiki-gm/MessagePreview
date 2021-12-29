@@ -11,6 +11,8 @@
     "antd": "4.17.4",
     "classnames": "2.3.1",
     "html-parse-stringify": "^3.0.1",
+    "qimai-rc-business": "^0.1.68",
+    "qimai_designpro": "^0.1.54",
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "react-scripts": "4.0.0"

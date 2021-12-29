@@ -6,7 +6,7 @@ import "../styles.css";
 export default function InputMessage(props) {
   const NICKNAME_KEYWORD = '#客户昵称#',
   NICKNAME_IMG_SRC = 'https://wwcdn.weixin.qq.com/node/wework/images/201911232334.c37d3f0874.svg'
-  const { setState, textVal } = props;
+  const { setState, textVal, children } = props;
   const ref = useRef({});
   const cache = useRef('')
 
@@ -95,7 +95,6 @@ export default function InputMessage(props) {
     console.log('onPaste')
     const val =  getContent(ref.current.innerHTML)
 
-    // if (textVal.length > 150) return
     e.preventDefault();
     let text = (e.originalEvent || e).clipboardData.getData("text/plain");
 
@@ -162,6 +161,7 @@ export default function InputMessage(props) {
         <span className="last-num">{textVal.length}/1500</span>
       </div>
       <div className="line"></div>
+      <div>{children}</div>
     </div>
   );
 }
