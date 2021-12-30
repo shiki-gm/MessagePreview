@@ -14,11 +14,14 @@ export default function MessagePreview(props) {
     var output = temp.innerText
     temp = null
     output = output.replace(/\&nbsp\;/gi, ' ')
+    output = output.replace(/br/gi, '<br/>')
+
+    console.log('output', output);
     setState(output)
   }, [textVal])
   return (
     <div className='messagePreview'>
-      {state}
+      <div dangerouslySetInnerHTML={{__html: state}} />
     </div>
   );
 }
