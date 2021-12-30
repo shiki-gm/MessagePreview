@@ -1,45 +1,63 @@
-import { Button, Input } from "antd";
 import { useState, useRef, useEffect } from "react";
 import htmlParser from "html-parse-stringify";
 import "../styles.css";
 
 export default function InputMessage(props) {
-  const NICKNAME_KEYWORD = '#客户昵称#',
-  NICKNAME_IMG_SRC = 'https://wwcdn.weixin.qq.com/node/wework/images/201911232334.c37d3f0874.svg'
-  const { setState, textVal, children } = props;
+  const {children} = props
+  const NICKNAME_KEYWORD = "#客户昵称#",
+    NICKNAME_IMG_SRC = "/nickname.svg";
+  const { setState, textVal } = props;
   const ref = useRef({});
-  const cache = useRef('')
+  const cache = useRef("");
+  
+  const selObj = useRef(window.getSelection());
 
   useEffect(() => {
-    ref.current.addEventListener('paste', e => onPaste(e))
-    ref.current.addEventListener('keydown', e=>{
-     const val =  getContent(ref.current.innerHTML)
+    ref.current.addEventListener("paste", (e) => onPaste(e));
+    ref.current.addEventListener("keydown", (e) => {
+      console.log("keydown", e);
+      const val = getContent(ref.current.innerHTML);
       if (val.length >= 1500 && e.keyCode !== 8) e.preventDefault();
-   })
-  }, [])
+    });
+  }, []);
 
-  const getContent = (data) => {
-    var ast = htmlParser.parse(data);
+  const getContent = (data = "", children = []) => {
+    let ast = [],
+      val = "";
+    console.log("data", data);
+    try {
+      ast = !children.length ? htmlParser.parse(data) : children;
+    } catch (error) {
+      ast = [];
+      console.log("error", error);
+    }
 
-    let val = "";
+    // console.log('ast', ast);
     ast.forEach((item) => {
       if (item.type === "text") {
         val = val + item.content + "";
+      } else if (item.type === "tag") {
+        if (item.name === "img") {
+          val = val + item.attrs.alt;
+        } else if (item.name === "br") {
+          val = val + "br";
+        } else {
+          val = val + getContent({}, item.children);
+        }
       } else {
-        val = val + item.attrs.alt;
+        val = val + "";
       }
     });
     return val;
   };
 
   const onInput = (e) => {
-    console.log('onInput')
     const temp = getContent(e.target.innerHTML);
-
+    console.log("onInput", temp);
     setState(temp);
   };
   const onChange = (e) => {
-    console.log('onChange')
+    console.log("onChange");
     ref.current.focus();
 
     // todo 使用style 实现颜色
@@ -48,18 +66,16 @@ export default function InputMessage(props) {
     );
   };
   const onClick = () => {
-    ref.current.blur();
-    // 如果只有focus会出现只消失before，但不展示光标
     ref.current.focus();
   };
   // https://wwcdn.weixin.qq.com/node/wework/images/201911232334.c37d3f0874.svg
   const insertHtmlFragment = (html) => {
-    console.log('insertHtmlFragment')
-    let sel, range;
-    sel = window.getSelection();
-    if (sel.getRangeAt && sel.rangeCount) {
+    console.log("insertHtmlFragment");
+
+    let range;
+    if (selObj.current.getRangeAt && selObj.current.rangeCount) {
       // 找到鼠标选中区域，拿到第一个位置
-      range = sel.getRangeAt(0);
+      range = selObj.current.getRangeAt(0);
       console.log("range", range);
       // 删除选中区域内容
       range.deleteContents();
@@ -72,8 +88,10 @@ export default function InputMessage(props) {
       let frag = document.createDocumentFragment(),
         node,
         lastNode;
-      let valPlus = val + el.firstChild.alt
-      if (valPlus.length >= 1500) {return}
+      let valPlus = val + el.firstChild.alt;
+      if (valPlus.length >= 1500) {
+        return;
+      }
       setState(valPlus);
 
       while ((node = el.firstChild)) {
@@ -85,24 +103,28 @@ export default function InputMessage(props) {
         range = range.cloneRange();
         range.setStartAfter(lastNode);
         range.collapse(true);
-        sel.removeAllRanges();
-        sel.addRange(range);
+        selObj.current.removeAllRanges();
+        selObj.current.addRange(range);
       }
     }
   };
 
   const onPaste = (e) => {
-    console.log('onPaste')
-    const val =  getContent(ref.current.innerHTML)
+    console.log("onPaste");
+    const val = getContent(ref.current.innerHTML);
 
     e.preventDefault();
     let text = (e.originalEvent || e).clipboardData.getData("text/plain");
 
-
-    
-    if ((val + text).length > 1500) {return}
+    if ((val + text).length > 1500) {
+      return;
+    }
     // 用户粘贴什么，不做任何转换，直接输出，包括\n\r<br/>
     // 关键词转化下
+    getKeyWord(text);
+  };
+
+  const getKeyWord = (text) => {
     if (text.indexOf(NICKNAME_KEYWORD) > -1) {
       var array = text.split(NICKNAME_KEYWORD);
       document.execCommand(
@@ -115,30 +137,28 @@ export default function InputMessage(props) {
     } else {
       document.execCommand("insertText", false, text);
     }
-  }
+  };
 
-  const onComposition = e => {
-    if (e.type === 'compositionstart') {
-      console.log('compositionstart')
-      cache.current = getContent(ref.current.innerHTML)
-      
-    } else if (e.type === 'compositionend') {
-      console.log('compositionend')
-      const val = getContent(ref.current.innerHTML)
+  const onComposition = (e) => {
+    if (e.type === "compositionstart") {
+      // console.log("compositionstart");
+      cache.current = getContent(ref.current.innerHTML);
+    } else if (e.type === "compositionend") {
+      // console.log("compositionend");
+      const val = getContent(ref.current.innerHTML);
       // console.log('e.target.innerHTML', val, e.target.innerHTML)
-      const value = e.target.innerHTML + val
-      console.log(ref.current)
+      const value = e.target.innerHTML + val;
+      // console.log(ref.current);
       if (value.length > 1500) {
         // console.log('cache', cache.current);
-        const len = (ref.current.innerHTML = cache.current).length
+        const len = (ref.current.innerHTML = cache.current).length;
         ref.current.focus();
-        var selObj = window.getSelection();
         // 获取输入框对象，并将光标移动到最后，如果不这么做，光标自动移动到首位
-        selObj.selectAllChildren(ref.current);
-        selObj.collapseToEnd();
+        selObj.current.selectAllChildren(ref.current);
+        selObj.current.collapseToEnd();
       }
     }
-  }
+  };
 
   return (
     // "{客户昵称}欢迎成为我的客户，接下来由我向您提供服务"
@@ -150,14 +170,17 @@ export default function InputMessage(props) {
         onClick={onClick}
         className="textarea"
         maxLength="300"
-        placeholder='欢迎成为我的客户，接下来由我向您提供服务'
         onCompositionStart={onComposition}
         // onCompositionUpdate={onCompositionUpdate}
         onCompositionEnd={onComposition}
-      >
-      </div>
+      ></div>
       <div className="input-footer">
-        <img src="nickname.svg" className="nickname" alt="" onClick={onChange} />
+        <img
+          src="nickname.svg"
+          className="nickname"
+          alt=""
+          onClick={onChange}
+        />
         <span className="last-num">{textVal.length}/1500</span>
       </div>
       <div className="line"></div>
