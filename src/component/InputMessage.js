@@ -35,12 +35,18 @@ export default function InputMessage(props) {
     // console.log('ast', ast);
     ast.forEach((item) => {
       if (item.type === "text") {
-        val = val + item.content + "";
+        // val = val + item.content + "";
+        // const aa = item.content.match(/(\r\n)|(\n)|(\r)/gi)
+        console.log('aa', item.content);
+        
+        // val = val + item.content.replace(/(\r\n)|(\n)|(\r)/gi, "br") + ""
+        val = val + item.content + ""
+
       } else if (item.type === "tag") {
         if (item.name === "img") {
           val = val + item.attrs.alt;
-        } else if (item.name === "br") {
-          val = val + "br";
+        } else if (item.name === "div") {
+           val = val + "br" + getContent({}, item.children);
         } else {
           val = val + getContent({}, item.children);
         }
